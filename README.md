@@ -20,7 +20,7 @@ npm install moecounter.js
 <script src="https://cdn.jsdelivr.net/npm/moecounter.js@1/dist/browser/moecounter.min.js"></script>
 ```
 ## 🌍 Demo
-moecounter-showcase.vercel.app
+[moecounter-showcase.vercel.app](https://moecounter-showcase.vercel.app/)
 
 ## 😸 Counters
 ### Default (gif)
