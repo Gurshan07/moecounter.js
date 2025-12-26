@@ -1,41 +1,83 @@
-const API_URL = 'https://api.sefinek.net/api/v2/moecounter';
-const VERSION = '1.0.13';
-const USERAGENT = `moecounter.js/${VERSION} (+https://github.com/sefinek/moecounter.js)`;
+/**
+ * MoeCounter — 100% independent version
+ * Replaces original moecounter.min.js
+ * Works with your own Worker
+ */
 
+const API_URL = 'https://moecounter.jawandha-moecounter.workers.dev/api/v2/moecounter';
+
+/**
+ * Construct URL with query parameters
+ * @param {string} baseUrl
+ * @param {object} params
+ * @returns {string}
+ */
 const constructUrl = (baseUrl, params) => {
-	const queryString = Object.entries(params)
-		.filter(([, value]) => ['string', 'number', 'boolean'].includes(typeof value))
-		.map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
-		.join('&');
-	return `${baseUrl}?${queryString}`;
+  const queryString = Object.entries(params)
+    .filter(([, value]) => ['string', 'number', 'boolean'].includes(typeof value))
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+    .join('&');
+  return `${baseUrl}?${queryString}`;
 };
 
+/**
+ * Fetch HTML from Worker
+ * @param {string} url
+ * @returns {Promise<string>}
+ */
 const httpsGet = async url => {
-	try {
-		const res = await fetch(url, {
-			method: 'GET',
-			headers: { 'User-Agent': USERAGENT },
-		});
-
-		if (!res.ok) {
-			throw new Error(`Request failed. Status code: ${res.status} (${res.statusText})`);
-		}
-
-		return res.text();
-	} catch (err) {
-		console.error(err);
-	}
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Request failed. Status code: ${res.status} (${res.statusText})`);
+    return res.text();
+  } catch (err) {
+    console.error("MoeCounter fetch error:", err);
+    return `<p style="color:red;">Failed to load counter</p>`;
+  }
 };
 
-const fetchSvgData = async (baseUrl, queryParams) => {
-	const fullUrl = constructUrl(baseUrl, queryParams);
-	if (!queryParams.svg) return { url: fullUrl };
-
-	const svg = await httpsGet(fullUrl);
-	return { url: fullUrl, svg };
+/**
+ * Fetch counter HTML from your Worker
+ * @param {object} options
+ * @returns {Promise<string>}
+ */
+const fetchCounterHtml = async (options = {}) => {
+  const url = constructUrl(API_URL, options);
+  return await httpsGet(url);
 };
 
-const local = async options => fetchSvgData(API_URL, { number: 0, ...options });
-const remote = async ({ name: counterName, ...restOptions }) => fetchSvgData(`${API_URL}/@${counterName}`, restOptions);
+/**
+ * Local counter (number override)
+ * @param {object} options
+ * @returns {Promise<string>}
+ */
+const local = async (options = {}) => fetchCounterHtml({ number: 0, ...options });
 
-module.exports = { local, remote, version: VERSION };
+/**
+ * Remote counter (by name)
+ * @param {object} param0 { name, ...restOptions }
+ * @returns {Promise<string>}
+ */
+const remote = async ({ name = "default", ...restOptions } = {}) => {
+  return fetchCounterHtml({ name, ...restOptions });
+};
+
+/**
+ * Embed counter directly into a page
+ * @param {string} containerId - ID of element to insert counter into
+ * @param {string} name - KV counter name
+ * @param {number} length - Number of digits to pad
+ */
+const embed = async (containerId, name = "default", length = 6) => {
+  const container = document.getElementById(containerId);
+  if (!container) {
+    console.error(`MoeCounter embed: No element with id '${containerId}'`);
+    return;
+  }
+
+  const html = await remote({ name, length });
+  container.innerHTML = html;
+};
+
+// Export API
+module.exports = { local, remote, embed };

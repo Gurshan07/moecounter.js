@@ -1,5 +1,5 @@
 {
-  "name": "moecounter.js",
+  "name": "moecounter",
   "version": "1.0.13",
   "description": "The most effective and efficient MoeCounters for your projects, designed to display a wide range of statistics for your website and more!",
   "keywords": [
@@ -53,9 +53,17 @@
     "test": "node examples/localDb.js && node examples/remoteDb.js"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
     "@eslint/js": "^9.13.0",
+    "babel-loader": "^10.0.0",
     "globals": "^15.11.0",
-    "webpack": "^5.96.0",
+    "terser-webpack-plugin": "^5.3.16",
+    "webpack": "^5.104.1",
     "webpack-cli": "^5.1.4"
-  }
+  },
+  "directories": {
+    "example": "examples"
+  },
+  "type": "commonjs"
 }
