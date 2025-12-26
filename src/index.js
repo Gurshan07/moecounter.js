@@ -1,35 +1,28 @@
 /**
- * MoeCounter — 100% independent version
- * Replaces original moecounter.min.js
- * Works with your own Worker
+ * MoeCounter — Independent SDK
  */
 
-const API_URL = 'https://moecounter.jawandha-moecounter.workers.dev/api/v2/moecounter';
+const BASE_API_URL = 'https://moecounter.jawandha-moecounter.workers.dev/api/v2/moecounter';
 
 /**
  * Construct URL with query parameters
- * @param {string} baseUrl
- * @param {object} params
- * @returns {string}
  */
 const constructUrl = (baseUrl, params) => {
   const queryString = Object.entries(params)
     .filter(([, value]) => ['string', 'number', 'boolean'].includes(typeof value))
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
     .join('&');
-  return `${baseUrl}?${queryString}`;
+  return queryString ? `${baseUrl}?${queryString}` : baseUrl;
 };
 
 /**
  * Fetch HTML from Worker
- * @param {string} url
- * @returns {Promise<string>}
  */
-const httpsGet = async url => {
+const httpsGet = async (url) => {
   try {
     const res = await fetch(url);
-    if (!res.ok) throw new Error(`Request failed. Status code: ${res.status} (${res.statusText})`);
-    return res.text();
+    if (!res.ok) throw new Error(`Request failed. Status: ${res.status}`);
+    return await res.text();
   } catch (err) {
     console.error("MoeCounter fetch error:", err);
     return `<p style="color:red;">Failed to load counter</p>`;
@@ -37,47 +30,60 @@ const httpsGet = async url => {
 };
 
 /**
- * Fetch counter HTML from your Worker
- * @param {object} options
- * @returns {Promise<string>}
+ * 1. Static View: Reads KV but does NOT increment
  */
-const fetchCounterHtml = async (options = {}) => {
-  const url = constructUrl(API_URL, options);
+const remote = async ({ name = "default", ...restOptions } = {}) => {
+  const url = constructUrl(BASE_API_URL, { name, ...restOptions });
   return await httpsGet(url);
 };
 
 /**
- * Local counter (number override)
- * @param {object} options
- * @returns {Promise<string>}
+ * 2. Increment View: Updates KV (+1) and returns HTML
  */
-const local = async (options = {}) => fetchCounterHtml({ number: 0, ...options });
-
-/**
- * Remote counter (by name)
- * @param {object} param0 { name, ...restOptions }
- * @returns {Promise<string>}
- */
-const remote = async ({ name = "default", ...restOptions } = {}) => {
-  return fetchCounterHtml({ name, ...restOptions });
+const increment = async ({ name = "default", ...restOptions } = {}) => {
+  const url = constructUrl(`${BASE_API_URL}/increment`, { name, ...restOptions });
+  return await httpsGet(url);
 };
 
 /**
- * Embed counter directly into a page
- * @param {string} containerId - ID of element to insert counter into
- * @param {string} name - KV counter name
- * @param {number} length - Number of digits to pad
+ * 3. Local View: Manual number override
  */
-const embed = async (containerId, name = "default", length = 6) => {
+const local = async (options = {}) => {
+  const url = constructUrl(BASE_API_URL, { ...options });
+  return await httpsGet(url);
+};
+
+/**
+ * Embed counter with a check to prevent (canceled) requests
+ */
+const embed = async (containerId, name = "default", length = 6, shouldIncrement = true) => {
   const container = document.getElementById(containerId);
   if (!container) {
-    console.error(`MoeCounter embed: No element with id '${containerId}'`);
+    console.error(`MoeCounter: No element with id '${containerId}'`);
     return;
   }
 
-  const html = await remote({ name, length });
-  container.innerHTML = html;
+  // --- PREVENT DUPLICATE RUNS ---
+  // If this container is already loading, stop this second execution
+  if (container.getAttribute('data-moe-loading') === 'true') {
+    return;
+  }
+  
+  // Set loading state
+  container.setAttribute('data-moe-loading', 'true');
+
+  try {
+    // Choose the correct endpoint based on shouldIncrement
+    const html = shouldIncrement 
+      ? await increment({ name, length }) 
+      : await remote({ name, length });
+
+    container.innerHTML = html;
+  } finally {
+    // Always remove the loading state when finished (or if it fails)
+    container.removeAttribute('data-moe-loading');
+  }
 };
 
 // Export API
-module.exports = { local, remote, embed };
+module.exports = { local, remote, increment, embed };

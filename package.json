@@ -65,5 +65,8 @@
   "directories": {
     "example": "examples"
   },
-  "type": "commonjs"
+  "type": "commonjs",
+  "dependencies": {
+    "@cloudflare/kv-asset-handler": "^0.4.1"
+  }
 }
