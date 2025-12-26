@@ -1,0 +1,19 @@
+# Node modules (if any)
+node_modules/
+
+# Wrangler local config
+wrangler.toml
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code settings
+.vscode/
+
+# Temporary build files
+dist/
+build/

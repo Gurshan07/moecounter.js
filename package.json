@@ -1,0 +1,61 @@
+{
+  "name": "moecounter.js",
+  "version": "1.0.13",
+  "description": "The most effective and efficient MoeCounters for your projects, designed to display a wide range of statistics for your website and more!",
+  "keywords": [
+    "anime",
+    "anime-counter",
+    "anime-counters",
+    "anime-girl",
+    "anime-girls",
+    "anime-neko",
+    "anime-tags",
+    "catgirl",
+    "catgirl-counter",
+    "catgirl-counters",
+    "catgirls",
+    "catgirls-counter",
+    "catgirls-counters",
+    "counter",
+    "counters",
+    "cute-anime",
+    "cute-catgirl",
+    "kawaii",
+    "kawaii-anime",
+    "kawaii-catgirl",
+    "moe",
+    "moe-counter",
+    "moe-counter.js",
+    "moecounter",
+    "moecounter.js",
+    "neko",
+    "neko-counter",
+    "neko-counters",
+    "nekos",
+    "neko-girl",
+    "neko-girls"
+  ],
+  "homepage": "https://sefinek.net/npm/moecounter.js/demo",
+  "bugs": {
+    "url": "https://github.com/sefinek/moecounter.js/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sefinek/moecounter.js.git"
+  },
+  "license": "MIT",
+  "author": "Sefinek <contact@sefinek.net> (https://sefinek.net)",
+  "main": "src/index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "m": "ncu -u && npm install && npm update",
+    "test": "node examples/localDb.js && node examples/remoteDb.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "globals": "^15.11.0",
+    "webpack": "^5.96.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
