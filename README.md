@@ -19,6 +19,9 @@ npm install moecounter.js
 ```html
 <script src="https://cdn.jsdelivr.net/npm/moecounter.js@1/dist/browser/moecounter.min.js"></script>
 ```
+## 🌍 Demo
+moecounter-showcase.vercel.app
+
 ## 😸 Counters
 ### Default (gif)
 ![](https://api.sefinek.net/api/v2/moecounter?number=1234567890&length=10&theme=default&pixelated=true)  \
