@@ -7,64 +7,54 @@ export default {
     const url = new URL(request.url);
     const pathname = url.pathname;
 
-    // ---- API ROUTE LOGIC ----
-    // This matches both /api/v2/moecounter AND /api/v2/moecounter/increment
+    // ---------------- API ----------------
     if (pathname.startsWith("/api/v2/moecounter")) {
       try {
-        const queryNumber = url.searchParams.get("number");
-        const counterName = url.searchParams.get("name") || "default";
+        const theme = url.searchParams.get("theme") || "default";
+        const number = url.searchParams.get("number");
         const length = parseInt(url.searchParams.get("length") || "6", 10);
-        
-        // Determine if we should increment based on the URL path
-        const isIncrementPath = pathname.includes("/increment");
+        const isIncrement = pathname.endsWith("/increment");
 
-        let displayValue;
+        let value;
 
-        // 1. If 'number' param is present, it always takes priority (Static)
-        if (queryNumber !== null) {
-          displayValue = queryNumber;
-        } 
-        // 2. If path includes /increment, update KV
-        else if (isIncrementPath) {
-          let kvValue = await env.COUNTER_KV.get(counterName);
-          let count = kvValue ? parseInt(kvValue, 10) : 0;
-          count += 1;
-          await env.COUNTER_KV.put(counterName, count.toString());
-          displayValue = count.toString();
-        } 
-        // 3. Otherwise, just READ from KV (Static counter)
-        else {
-          let kvValue = await env.COUNTER_KV.get(counterName);
-          displayValue = kvValue ? kvValue : "0";
+        if (number !== null) {
+          value = number;
+        } else if (isIncrement) {
+          const kv = await env.COUNTER_KV.get(theme);
+          const count = (kv ? parseInt(kv, 10) : 0) + 1;
+          await env.COUNTER_KV.put(theme, count.toString());
+          value = count.toString();
+        } else {
+          value = (await env.COUNTER_KV.get(theme)) || "0";
         }
 
-        // Apply Padding/Trimming logic
-        const padded = displayValue.toString().padStart(length, "0").slice(-length);
+        const digits = value.padStart(length, "0").slice(-length);
+        const origin = url.origin;
 
-        const origin = url.origin; 
         let html = `<!DOCTYPE html><html><head><style>
           body { margin:0; display:inline-flex; background:transparent; }
-          img { display:block; image-rendering:pixelated; height:auto; }
+          img { image-rendering:pixelated; }
         </style></head><body>`;
 
-        for (const digit of padded) {
-          html += `<img src="${origin}/${digit}.gif" alt="${digit}" />`;
+        for (const d of digits) {
+          html += `<img src="${origin}/${theme}/${d}.gif" alt="${d}" />`;
         }
-        html += "</body></html>";
+
+        html += `</body></html>`;
 
         return new Response(html, {
           headers: {
             "Content-Type": "text/html",
             "Cache-Control": "no-store",
-            "Access-Control-Allow-Origin": "*",
-          },
+            "Access-Control-Allow-Origin": "*"
+          }
         });
-      } catch (err) {
-        return new Response(`API Error: ${err.message}`, { status: 500 });
+      } catch (e) {
+        return new Response(`API error: ${e.message}`, { status: 500 });
       }
     }
 
-    // ---- STATIC ASSETS (0.gif - 9.gif) ----
+    // ---------------- STATIC FILES ----------------
     try {
       return await getAssetFromKV(
         { request, waitUntil: ctx.waitUntil.bind(ctx) },
@@ -73,5 +63,5 @@ export default {
     } catch {
       return new Response("Not Found", { status: 404 });
     }
-  },
+  }
 };

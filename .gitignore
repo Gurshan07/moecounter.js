@@ -7,6 +7,9 @@ wrangler.toml
 # Logs
 *.log
 
+#public/
+.public/
+
 # OS files
 .DS_Store
 Thumbs.db
