@@ -8,7 +8,8 @@ wrangler.toml
 *.log
 
 #public/
-.public/
+public/
+
 
 # OS files
 .DS_Store
