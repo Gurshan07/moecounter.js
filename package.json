@@ -67,6 +67,8 @@
   },
   "type": "commonjs",
   "dependencies": {
-    "@cloudflare/kv-asset-handler": "^0.4.1"
+    "@cloudflare/kv-asset-handler": "^0.4.1",
+    "gif-encoder-2": "^1.0.5",
+    "gifuct-js": "^2.1.2"
   }
 }
