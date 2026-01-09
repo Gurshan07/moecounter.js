@@ -24,8 +24,28 @@ npm install moecounter.js
 
 ## 😸 Counters
 ### Default (gif)
-![](https://api.sefinek.net/api/v2/moecounter?number=1234567890&length=10&theme=default&pixelated=true)  \
-`https://moecounter.jawandha-moecounter.workers.dev/api/v2/moecounter?number=0123456789&length=10`
+![](https://moecounter.jawandha-moecounter.workers.dev/api/v2/moecounter?theme=default&length=10&number=1234567890)
+
+### Gelbooru (gif)
+![](https://moecounter.jawandha-moecounter.workers.dev/api/v2/moecounter?theme=gelbooru&length=10&number=1234567890)
+
+### Asoul (gif)
+![](https://moecounter.jawandha-moecounter.workers.dev/api/v2/moecounter?theme=asoul&length=10&number=1234567890)
+
+### Booru Jaypee (gif)
+![](https://moecounter.jawandha-moecounter.workers.dev/api/v2/moecounter?theme=booru-jaypee&length=10&number=1234567890)
+
+### Booru Lisu (gif)
+![](https://moecounter.jawandha-moecounter.workers.dev/api/v2/moecounter?theme=booru-lisu&length=10&number=1234567890)
+
+### Booru Lewd (gif)
+![](https://moecounter.jawandha-moecounter.workers.dev/api/v2/moecounter?theme=booru-lewd&length=10&number=1234567890)
+
+### Booru Quality Hentais (gif)
+![](https://moecounter.jawandha-moecounter.workers.dev/api/v2/moecounter?theme=booru-qualityhentais&length=10&number=1234567890)
+
+### Booru SMTG (gif)
+![](https://moecounter.jawandha-moecounter.workers.dev/api/v2/moecounter?theme=booru-smtg&length=10&number=1234567890)
 
 ## 📃 Documentation
 ### `moecounter.local(options)`
